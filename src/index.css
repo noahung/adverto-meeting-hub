@@ -18,7 +18,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 214 100% 25%;
+    --primary: 20 94% 55%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -27,7 +27,7 @@ All colors MUST be HSL.
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 214 100% 25%;
+    --accent: 20 94% 55%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -35,7 +35,7 @@ All colors MUST be HSL.
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 214 100% 25%;
+    --ring: 20 94% 55%;
 
     --radius: 0.5rem;
 
@@ -49,8 +49,8 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Custom Advertomedia brand colors */
-    --brand-blue: 214 100% 25%;
-    --brand-light-blue: 214 50% 85%;
+    --brand-orange: 20 94% 55%;
+    --brand-light-orange: 20 50% 85%;
     --brand-dark: 222 47% 11%;
     --brand-gray: 215 16% 47%;
     --success: 142 76% 36%;
@@ -64,7 +64,7 @@ All colors MUST be HSL.
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 214 100% 35%;
+    --primary: 20 94% 55%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -101,7 +101,7 @@ All colors MUST be HSL.
 /* Custom utilities */
 @layer utilities {
   .gradient-bg {
-    background: linear-gradient(135deg, hsl(var(--brand-blue)) 0%, hsl(var(--brand-light-blue)) 100%);
+    background: linear-gradient(135deg, hsl(var(--brand-orange)) 0%, hsl(var(--brand-light-orange)) 100%);
   }
   
   .glass-effect {
