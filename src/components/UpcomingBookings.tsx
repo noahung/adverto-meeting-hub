@@ -1,6 +1,7 @@
-
+import React, { useState } from 'react';
 import { Clock, Users, Trash2 } from 'lucide-react';
 import { Booking } from '../pages/Index';
+import { BookingDetailsModal } from './BookingDetailsModal';
 
 interface UpcomingBookingsProps {
   bookings: Booking[];
@@ -8,6 +9,7 @@ interface UpcomingBookingsProps {
 }
 
 export const UpcomingBookings = ({ bookings, onDeleteBooking }: UpcomingBookingsProps) => {
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const now = new Date();
   const currentDate = now.toISOString().split('T')[0];
   const currentTime = now.toTimeString().slice(0, 5);
@@ -62,7 +64,11 @@ export const UpcomingBookings = ({ bookings, onDeleteBooking }: UpcomingBookings
           </div>
         ) : (
           upcomingBookings.map((booking) => (
-            <div key={booking.id} className="p-4 hover:bg-gray-50 transition-colors">
+            <div
+              key={booking.id}
+              className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={() => setSelectedBooking(booking)}
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
@@ -114,7 +120,7 @@ export const UpcomingBookings = ({ bookings, onDeleteBooking }: UpcomingBookings
                 </div>
                 
                 <button
-                  onClick={() => onDeleteBooking(booking.id)}
+                  onClick={e => { e.stopPropagation(); onDeleteBooking(booking.id); }}
                   className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                   title="Cancel booking"
                 >
@@ -125,6 +131,8 @@ export const UpcomingBookings = ({ bookings, onDeleteBooking }: UpcomingBookings
           ))
         )}
       </div>
+      
+      <BookingDetailsModal booking={selectedBooking} onClose={() => setSelectedBooking(null)} />
     </div>
   );
 };

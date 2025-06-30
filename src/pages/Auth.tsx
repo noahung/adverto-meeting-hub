@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Calendar, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,7 +27,7 @@ const Auth = () => {
         description: "You've been successfully logged in.",
       });
       
-      window.location.href = '/';
+      window.location.href = '/adverto-meeting-hub/';
     } catch (error: any) {
       toast({
         title: "Login Error",

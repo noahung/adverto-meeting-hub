@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -13,8 +12,13 @@ interface RoomBookingCalendarProps {
 export const RoomBookingCalendar = ({ bookings, selectedDate, onDateSelect }: RoomBookingCalendarProps) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   
+  function toLocalDateString(date: Date) {
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  }
+  
   // Get bookings for selected date
-  const selectedDateStr = selectedDate.toISOString().split('T')[0];
+  const selectedDateStr = toLocalDateString(selectedDate);
   const dayBookings = bookings.filter(booking => booking.date === selectedDateStr);
   
   // Create a map of dates that have bookings
@@ -60,7 +64,7 @@ export const RoomBookingCalendar = ({ bookings, selectedDate, onDateSelect }: Ro
           onMonthChange={setCurrentMonth}
           className="rounded-md border-0"
           modifiers={{
-            hasBookings: (date) => bookingDates.has(date.toISOString().split('T')[0])
+            hasBookings: (date) => bookingDates.has(toLocalDateString(date))
           }}
           modifiersStyles={{
             hasBookings: {

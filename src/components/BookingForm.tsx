@@ -9,15 +9,21 @@ interface BookingFormProps {
   onClose: () => void;
 }
 
+function toLocalDateString(date: Date) {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 export const BookingForm = ({ selectedDate, existingBookings, onSubmit, onClose }: BookingFormProps) => {
   const [title, setTitle] = useState('');
   const [organizer, setOrganizer] = useState('');
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
   const [participants, setParticipants] = useState<string[]>(['']);
+  const [date, setDate] = useState(toLocalDateString(selectedDate));
+  const [description, setDescription] = useState('');
 
-  const selectedDateStr = selectedDate.toISOString().split('T')[0];
-  const dayBookings = existingBookings.filter(booking => booking.date === selectedDateStr);
+  const dayBookings = existingBookings.filter(booking => booking.date === date);
 
   const addParticipant = () => {
     setParticipants([...participants, '']);
@@ -52,8 +58,9 @@ export const BookingForm = ({ selectedDate, existingBookings, onSubmit, onClose 
       organizer,
       startTime,
       endTime,
-      date: selectedDateStr,
-      participants: participants.filter(p => p.trim() !== '')
+      date,
+      participants: participants.filter(p => p.trim() !== ''),
+      description
     });
   };
 
@@ -105,9 +112,9 @@ export const BookingForm = ({ selectedDate, existingBookings, onSubmit, onClose 
             </label>
             <input
               type="date"
-              value={selectedDateStr}
+              value={date}
+              onChange={e => setDate(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
-              readOnly
             />
           </div>
 
@@ -180,6 +187,19 @@ export const BookingForm = ({ selectedDate, existingBookings, onSubmit, onClose 
                 <span>Add participant</span>
               </button>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter meeting description (optional)"
+              rows={3}
+            />
           </div>
 
           {/* Existing bookings for the day */}

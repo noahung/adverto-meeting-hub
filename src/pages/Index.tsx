@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
@@ -20,6 +19,7 @@ export interface Booking {
   participants: string[];
   status: 'confirmed' | 'pending' | 'cancelled';
   user_id?: string;
+  description?: string;
 }
 
 const Index = () => {
@@ -64,7 +64,8 @@ const Index = () => {
         date: booking.date,
         participants: booking.participants || [],
         status: (booking.status as 'confirmed' | 'pending' | 'cancelled') || 'confirmed',
-        user_id: booking.user_id
+        user_id: booking.user_id,
+        description: booking.description || '',
       }));
 
       setBookings(formattedBookings);
@@ -93,7 +94,8 @@ const Index = () => {
           end_time: newBooking.endTime,
           date: newBooking.date,
           participants: newBooking.participants,
-          status: 'confirmed'
+          status: 'confirmed',
+          description: newBooking.description,
         })
         .select()
         .single();
@@ -109,7 +111,8 @@ const Index = () => {
         date: data.date,
         participants: data.participants || [],
         status: data.status as 'confirmed' | 'pending' | 'cancelled',
-        user_id: data.user_id
+        user_id: data.user_id,
+        description: data.description || '',
       };
 
       setBookings([...bookings, formattedBooking]);
