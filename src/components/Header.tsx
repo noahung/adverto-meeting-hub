@@ -12,7 +12,7 @@ export const Header = () => {
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10">
               <img 
-                src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=40&h=40&fit=crop&crop=center" 
+                src="https://xcmhsneyivchstmkbbla.supabase.co/storage/v1/object/public/images//logo.png?w=40&h=40&fit=crop&crop=center" 
                 alt="Advertomedia Logo" 
                 className="w-full h-full object-contain rounded-lg"
               />
