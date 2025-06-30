@@ -46,7 +46,7 @@ const Auth = () => {
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4">
             <img 
-              src="/logo.png" 
+              src="https://xcmhsneyivchstmkbbla.supabase.co/storage/v1/object/public/images//logo.png" 
               alt="Advertomedia Logo" 
               className="w-full h-full object-contain rounded-lg"
             />
