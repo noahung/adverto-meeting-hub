@@ -63,7 +63,7 @@ const Index = () => {
         endTime: booking.end_time,
         date: booking.date,
         participants: booking.participants || [],
-        status: booking.status as 'confirmed' | 'pending' | 'cancelled',
+        status: (booking.status as 'confirmed' | 'pending' | 'cancelled') || 'confirmed',
         user_id: booking.user_id
       }));
 
@@ -108,7 +108,7 @@ const Index = () => {
         endTime: data.end_time,
         date: data.date,
         participants: data.participants || [],
-        status: data.status,
+        status: data.status as 'confirmed' | 'pending' | 'cancelled',
         user_id: data.user_id
       };
 
@@ -189,8 +189,8 @@ const Index = () => {
                   Book Meeting Room
                 </button>
                 <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium transition-colors duration-200">
-                  View Team Calendars
-                  <span className="block text-xs text-gray-500 mt-1">Google Calendar integration coming soon</span>
+                  Connect Google Calendar
+                  <span className="block text-xs text-gray-500 mt-1">Integration coming soon</span>
                 </button>
               </div>
             </div>
