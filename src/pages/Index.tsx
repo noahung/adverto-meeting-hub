@@ -1,10 +1,14 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { RoomBookingCalendar } from '../components/RoomBookingCalendar';
 import { BookingForm } from '../components/BookingForm';
 import { UpcomingBookings } from '../components/UpcomingBookings';
 import { RoomStatus } from '../components/RoomStatus';
+import { useAuth } from '../components/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export interface Booking {
   id: string;
@@ -15,48 +19,155 @@ export interface Booking {
   date: string;
   participants: string[];
   status: 'confirmed' | 'pending' | 'cancelled';
+  user_id?: string;
 }
 
 const Index = () => {
-  const [bookings, setBookings] = useState<Booking[]>([
-    {
-      id: '1',
-      title: 'Marketing Strategy Meeting',
-      organizer: 'Sarah Johnson',
-      startTime: '09:00',
-      endTime: '10:30',
-      date: new Date().toISOString().split('T')[0],
-      participants: ['John Doe', 'Jane Smith', 'Mike Wilson'],
-      status: 'confirmed'
-    },
-    {
-      id: '2',
-      title: 'Client Presentation',
-      organizer: 'David Brown',
-      startTime: '14:00',
-      endTime: '15:00',
-      date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-      participants: ['Emily Davis', 'Tom Anderson'],
-      status: 'confirmed'
-    }
-  ]);
-
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [loadingBookings, setLoadingBookings] = useState(true);
 
-  const handleBookingSubmit = (newBooking: Omit<Booking, 'id' | 'status'>) => {
-    const booking: Booking = {
-      ...newBooking,
-      id: Math.random().toString(36).substr(2, 9),
-      status: 'confirmed'
-    };
-    setBookings([...bookings, booking]);
-    setShowBookingForm(false);
+  // Redirect to auth if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  // Load bookings from Supabase
+  useEffect(() => {
+    if (user) {
+      loadBookings();
+    }
+  }, [user]);
+
+  const loadBookings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .order('date', { ascending: true })
+        .order('start_time', { ascending: true });
+
+      if (error) throw error;
+
+      const formattedBookings: Booking[] = data.map((booking) => ({
+        id: booking.id,
+        title: booking.title,
+        organizer: booking.organizer,
+        startTime: booking.start_time,
+        endTime: booking.end_time,
+        date: booking.date,
+        participants: booking.participants || [],
+        status: booking.status as 'confirmed' | 'pending' | 'cancelled',
+        user_id: booking.user_id
+      }));
+
+      setBookings(formattedBookings);
+    } catch (error: any) {
+      toast({
+        title: "Error loading bookings",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingBookings(false);
+    }
   };
 
-  const handleDeleteBooking = (id: string) => {
-    setBookings(bookings.filter(booking => booking.id !== id));
+  const handleBookingSubmit = async (newBooking: Omit<Booking, 'id' | 'status'>) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .insert({
+          user_id: user.id,
+          title: newBooking.title,
+          organizer: newBooking.organizer,
+          start_time: newBooking.startTime,
+          end_time: newBooking.endTime,
+          date: newBooking.date,
+          participants: newBooking.participants,
+          status: 'confirmed'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const formattedBooking: Booking = {
+        id: data.id,
+        title: data.title,
+        organizer: data.organizer,
+        startTime: data.start_time,
+        endTime: data.end_time,
+        date: data.date,
+        participants: data.participants || [],
+        status: data.status,
+        user_id: data.user_id
+      };
+
+      setBookings([...bookings, formattedBooking]);
+      setShowBookingForm(false);
+      
+      toast({
+        title: "Booking created!",
+        description: "Your meeting room has been successfully booked.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error creating booking",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
+
+  const handleDeleteBooking = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setBookings(bookings.filter(booking => booking.id !== id));
+      
+      toast({
+        title: "Booking cancelled",
+        description: "The booking has been successfully cancelled.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error cancelling booking",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Show loading state
+  if (loading || loadingBookings) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">

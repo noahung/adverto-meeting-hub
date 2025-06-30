@@ -1,7 +1,10 @@
 
-import { Calendar } from 'lucide-react';
+import { Calendar, LogOut, User } from 'lucide-react';
+import { useAuth } from './AuthProvider';
 
 export const Header = () => {
+  const { user, signOut } = useAuth();
+
   return (
     <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4 py-4">
@@ -17,13 +20,28 @@ export const Header = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">Conference Room A</p>
-              <p className="text-xs text-gray-500">Main Meeting Room</p>
-            </div>
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-blue-600 font-semibold text-sm">A</span>
-            </div>
+            {user && (
+              <>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900">
+                    {user.user_metadata?.full_name || user.email}
+                  </p>
+                  <p className="text-xs text-gray-500">{user.email}</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <button
+                    onClick={signOut}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
