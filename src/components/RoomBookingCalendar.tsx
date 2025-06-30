@@ -7,9 +7,10 @@ interface RoomBookingCalendarProps {
   bookings: Booking[];
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
+  onBookingClick?: (booking: Booking) => void;
 }
 
-export const RoomBookingCalendar = ({ bookings, selectedDate, onDateSelect }: RoomBookingCalendarProps) => {
+export const RoomBookingCalendar = ({ bookings, selectedDate, onDateSelect, onBookingClick }: RoomBookingCalendarProps) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   
   function toLocalDateString(date: Date) {
@@ -93,7 +94,7 @@ export const RoomBookingCalendar = ({ bookings, selectedDate, onDateSelect }: Ro
             {dayBookings
               .sort((a, b) => a.startTime.localeCompare(b.startTime))
               .map((booking) => (
-                <div key={booking.id} className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                <div key={booking.id} className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg cursor-pointer" onClick={() => onBookingClick && onBookingClick(booking)}>
                   <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">{booking.title}</p>
