@@ -7,6 +7,7 @@ interface BookingFormProps {
   existingBookings: Booking[];
   onSubmit: (booking: Omit<Booking, 'id' | 'status'>) => void;
   onClose: () => void;
+  initialBooking?: Booking;
 }
 
 function toLocalDateString(date: Date) {
@@ -14,14 +15,14 @@ function toLocalDateString(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
-export const BookingForm = ({ selectedDate, existingBookings, onSubmit, onClose }: BookingFormProps) => {
-  const [title, setTitle] = useState('');
-  const [organizer, setOrganizer] = useState('');
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('10:00');
-  const [participants, setParticipants] = useState<string[]>(['']);
-  const [date, setDate] = useState(toLocalDateString(selectedDate));
-  const [description, setDescription] = useState('');
+export const BookingForm = ({ selectedDate, existingBookings, onSubmit, onClose, initialBooking }: BookingFormProps) => {
+  const [title, setTitle] = useState(initialBooking ? initialBooking.title : '');
+  const [organizer, setOrganizer] = useState(initialBooking ? initialBooking.organizer : '');
+  const [startTime, setStartTime] = useState(initialBooking ? initialBooking.startTime : '09:00');
+  const [endTime, setEndTime] = useState(initialBooking ? initialBooking.endTime : '10:00');
+  const [participants, setParticipants] = useState<string[]>(initialBooking ? initialBooking.participants : ['']);
+  const [date, setDate] = useState(initialBooking ? initialBooking.date : toLocalDateString(selectedDate));
+  const [description, setDescription] = useState(initialBooking ? initialBooking.description || '' : '');
 
   const dayBookings = existingBookings.filter(booking => booking.date === date);
 
@@ -68,7 +69,7 @@ export const BookingForm = ({ selectedDate, existingBookings, onSubmit, onClose 
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Book Meeting Room</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{initialBooking ? 'Edit Booking' : 'Book Meeting Room'}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"

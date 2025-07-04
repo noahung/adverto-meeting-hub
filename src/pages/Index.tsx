@@ -30,6 +30,7 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [loadingBookings, setLoadingBookings] = useState(true);
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -65,7 +66,7 @@ const Index = () => {
         participants: booking.participants || [],
         status: (booking.status as 'confirmed' | 'pending' | 'cancelled') || 'confirmed',
         user_id: booking.user_id,
-        description: booking.description || '',
+        description: (booking as any).description ? (booking as any).description : '',
       }));
 
       setBookings(formattedBookings);
@@ -112,7 +113,7 @@ const Index = () => {
         participants: data.participants || [],
         status: data.status as 'confirmed' | 'pending' | 'cancelled',
         user_id: data.user_id,
-        description: data.description || '',
+        description: (data as any).description ? (data as any).description : '',
       };
 
       setBookings([...bookings, formattedBooking]);
@@ -128,6 +129,44 @@ const Index = () => {
         description: error.message,
         variant: "destructive",
       });
+    }
+  };
+
+  const handleEditBooking = (booking: Booking) => {
+    setEditingBooking(booking);
+  };
+
+  const handleUpdateBooking = async (updatedBooking: Omit<Booking, 'id' | 'status'>) => {
+    if (!user || !editingBooking) return;
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .update({
+          title: updatedBooking.title,
+          organizer: updatedBooking.organizer,
+          start_time: updatedBooking.startTime,
+          end_time: updatedBooking.endTime,
+          date: updatedBooking.date,
+          participants: updatedBooking.participants,
+          description: updatedBooking.description,
+        })
+        .eq('id', editingBooking.id)
+        .select()
+        .single();
+      if (error) throw error;
+      setBookings(bookings.map(b => b.id === editingBooking.id ? {
+        ...b,
+        ...updatedBooking,
+        startTime: updatedBooking.startTime,
+        endTime: updatedBooking.endTime,
+        status: b.status,
+        id: b.id,
+        user_id: b.user_id,
+      } : b));
+      setEditingBooking(null);
+      toast({ title: 'Booking updated!', description: 'Your booking was updated.' });
+    } catch (error: any) {
+      toast({ title: 'Error updating booking', description: error.message, variant: 'destructive' });
     }
   };
 
@@ -213,6 +252,7 @@ const Index = () => {
             <UpcomingBookings
               bookings={bookings}
               onDeleteBooking={handleDeleteBooking}
+              onEditBooking={handleEditBooking}
             />
           </div>
         </div>
@@ -225,6 +265,15 @@ const Index = () => {
           existingBookings={bookings}
           onSubmit={handleBookingSubmit}
           onClose={() => setShowBookingForm(false)}
+        />
+      )}
+      {editingBooking && (
+        <BookingForm
+          selectedDate={new Date(editingBooking.date)}
+          existingBookings={bookings.filter(b => b.id !== editingBooking.id)}
+          onSubmit={handleUpdateBooking}
+          onClose={() => setEditingBooking(null)}
+          initialBooking={editingBooking}
         />
       )}
     </div>

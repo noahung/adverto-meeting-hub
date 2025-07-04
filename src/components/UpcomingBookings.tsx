@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Clock, Users, Trash2 } from 'lucide-react';
+import { Clock, Users, Trash2, Pencil } from 'lucide-react';
 import { Booking } from '../pages/Index';
 import { BookingDetailsModal } from './BookingDetailsModal';
+import { useAuth } from './AuthProvider';
 
 interface UpcomingBookingsProps {
   bookings: Booking[];
   onDeleteBooking: (id: string) => void;
+  onEditBooking: (booking: Booking) => void;
 }
 
-export const UpcomingBookings = ({ bookings, onDeleteBooking }: UpcomingBookingsProps) => {
+export const UpcomingBookings = ({ bookings, onDeleteBooking, onEditBooking }: UpcomingBookingsProps) => {
+  const { user } = useAuth();
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const now = new Date();
   const currentDate = now.toISOString().split('T')[0];
@@ -118,14 +121,24 @@ export const UpcomingBookings = ({ bookings, onDeleteBooking }: UpcomingBookings
                     </div>
                   )}
                 </div>
-                
-                <button
-                  onClick={e => { e.stopPropagation(); onDeleteBooking(booking.id); }}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Cancel booking"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex flex-col items-end space-y-2">
+                  {user && booking.user_id === user.id && (
+                    <button
+                      onClick={e => { e.stopPropagation(); onEditBooking(booking); }}
+                      className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Edit booking"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  )}
+                  <button
+                    onClick={e => { e.stopPropagation(); onDeleteBooking(booking.id); }}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Cancel booking"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           ))
