@@ -123,21 +123,23 @@ export const UpcomingBookings = ({ bookings, onDeleteBooking, onEditBooking }: U
                 </div>
                 <div className="flex flex-col items-end space-y-2">
                   {user && booking.user_id === user.id && (
-                    <button
-                      onClick={e => { e.stopPropagation(); onEditBooking(booking); }}
-                      className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Edit booking"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
+                    <>
+                      <button
+                        onClick={e => { e.stopPropagation(); onEditBooking(booking); }}
+                        className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Edit booking"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={e => { e.stopPropagation(); onDeleteBooking(booking.id); }}
+                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Cancel booking"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </>
                   )}
-                  <button
-                    onClick={e => { e.stopPropagation(); onDeleteBooking(booking.id); }}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Cancel booking"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
             </div>
